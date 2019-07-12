@@ -1,0 +1,1 @@
+{"jobID":"3573fb93-ba0f-b618-3783-c7e6a4516629","spec":{"type":"policy","cause":{"Message":"","User":"Jesse B. Hannah \u003cjesse.hannah@nextiva.com\u003e"},"spec":{"kube-system:deployment/kube-state-metrics":{"add":{"automated":"true"},"remove":{}}}},"result":null}

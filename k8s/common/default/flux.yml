@@ -4,6 +4,8 @@ kind: ServiceAccount
 metadata:
   labels:
     app.kubernetes.io/name: flux
+  annotations:
+    iam.gke.io/gcp-service-account: ops-flux@issho-ni.iam.gserviceaccount.com
   name: flux
   namespace: default
 ---

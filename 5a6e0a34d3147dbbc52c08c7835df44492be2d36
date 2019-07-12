@@ -1,0 +1,1 @@
+{"jobID":"28f1e2c8-6793-929c-bd8c-b1add47019b5","spec":{"type":"policy","cause":{"Message":"","User":"Jesse B. Hannah \u003cjesse.hannah@nextiva.com\u003e"},"spec":{"flux:deployment/memcached":{"add":{"automated":"true"},"remove":{}}}},"result":null}

@@ -8,6 +8,7 @@ metadata:
     iam.gke.io/gcp-service-account: ops-flux@issho-ni.iam.gserviceaccount.com
   name: flux
   namespace: default
+
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
@@ -21,6 +22,7 @@ rules:
     verbs: ["*"]
   - nonResourceURLs: ["*"]
     verbs: ["*"]
+
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
@@ -36,6 +38,7 @@ subjects:
   - kind: ServiceAccount
     name: flux
     namespace: default
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -46,6 +49,7 @@ metadata:
     app.kubernetes.io/name: flux
   annotations:
     flux.weave.works/tag.flux: semver:~1
+    flux.weave.works/tag.prometheus-to-sd: semver:~0
     flux.weave.works/automated: "true"
 spec:
   replicas: 1
@@ -86,7 +90,12 @@ spec:
                   name: issho-cluster
                   key: ISSHO_CLUSTER
           ports:
-            - containerPort: 3030
+            - name: flux
+              containerPort: 3030
+              protocol: TCP
+            - name: prometheus
+              containerPort: 3031
+              protocol: TCP
           volumeMounts:
             - name: git-key
               mountPath: /etc/fluxd/ssh
@@ -100,6 +109,29 @@ spec:
             - --git-branch=master
             - --git-path=k8s/common,k8s/$(ISSHO_CLUSTER)
             - --listen-metrics=:3031
+        - name: prometheus-to-sd
+          image: gcr.io/google-containers/prometheus-to-sd:v0.5.2
+          ports:
+            - name: profiler
+              containerPort: 6060
+          command:
+            - /monitor
+            - --stackdriver-prefix=custom.googleapis.com
+            - --source=$(POD_NAME):http://localhost:3031/metrics
+            - --pod-id=$(POD_NAME)
+            - --namespace-id=$(POD_NAMESPACE)
+            - --scrape-interval=5s
+            - --export-interval=30s
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+
 ---
 apiVersion: v1
 kind: Secret

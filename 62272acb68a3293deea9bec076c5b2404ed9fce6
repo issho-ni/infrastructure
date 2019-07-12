@@ -1,0 +1,1 @@
+{"jobID":"2cbe92a6-281d-f52e-a5fb-003e3fbf75ef","spec":{"type":"policy","cause":{"Message":"","User":"Jesse B. Hannah \u003cjesse.hannah@nextiva.com\u003e"},"spec":{"flux:deployment/flux":{"add":{"automated":"true"},"remove":{}}}},"result":null}

@@ -1,0 +1,110 @@
+---
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: memcached
+  namespace: default
+  labels: &MemcachedDeploymentLabels
+    app.kubernetes.io/name: memcached
+    app.kubernetes.io/component: memcached-server
+  annotations:
+    flux.weave.works/tag.memcached: semver:~1
+    flux.weave.works/tag.prometheus-to-sd: semver:~1
+    flux.weave.works/automated: "true"
+spec:
+  selector:
+    matchLabels: *MemcachedDeploymentLabels
+  updateStrategy:
+    type: RollingUpdate
+  serviceName: memcached
+  replicas: 3
+  template:
+    metadata:
+      labels: *MemcachedDeploymentLabels
+    spec:
+      terminationGracePeriodSeconds: 180
+      containers:
+        - name: memcached
+          image: gcr.io/cloud-marketplace/google/memcached:1.5
+          imagePullPolicy: Always
+          env:
+            - name: MEMCACHED_PROMETHEUS_ENABLED
+              value: "true"
+          ports:
+            - name: prometheus
+              containerPort: 9150
+              protocol: TCP
+            - name: memcached
+              containerPort: 11211
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: memcached
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: memcached
+            initialDelaySeconds: 5
+            timeoutSeconds: 2
+        - name: prometheus-to-sd
+          image: gcr.io/cloud-marketplace/google/memcached/prometheus-to-sd:1.5
+          ports:
+            - name: profiler
+              containerPort: 6060
+          command:
+            - /monitor
+            - --stackdriver-prefix=custom.googleapis.com
+            - --source=$(POD_NAME):http://localhost:9150/metrics
+            - --pod-id=$(POD_NAME)
+            - --namespace-id=$(POD_NAMESPACE)
+            - --scrape-interval=5s
+            - --export-interval=30s
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: memcached-prometheus
+  namespace: default
+  labels:
+    app.kubernetes.io/name: memcached
+    app.kubernetes.io/component: memcached-server
+spec:
+  clusterIP: None
+  ports:
+    - name: prometheus-port
+      port: 9150
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: memcached
+    app.kubernetes.io/component: memcached-server
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: memcached
+  namespace: default
+  labels:
+    app.kubernetes.io/name: memcached
+    app.kubernetes.io/component: memcached-server
+spec:
+  clusterIP: None
+  ports:
+    - name: memcached-port
+      port: 11211
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: memcached
+    app.kubernetes.io/component: memcached-server
+  type: ClusterIP # LoadBalancer

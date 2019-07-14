@@ -360,6 +360,7 @@ spec:
         prometheus.io/path: /metrics
         prometheus.io/scrape: "true"
         prometheus.io/port: "9402"
+        readiness.status.sidecar.istio.io/applicationPorts: ""
     spec:
       serviceAccountName: cert-manager
       securityContext:

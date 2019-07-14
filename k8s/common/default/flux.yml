@@ -109,6 +109,7 @@ spec:
             - --git-branch=master
             - --git-path=k8s/common,k8s/$(ISSHO_CLUSTER)
             - --listen-metrics=:3031
+            - --log-format=json
         - name: prometheus-to-sd
           image: gcr.io/google-containers/prometheus-to-sd:v0.5.2
           ports:

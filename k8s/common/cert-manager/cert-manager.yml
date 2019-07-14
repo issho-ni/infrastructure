@@ -582,3 +582,11 @@ webhooks:
         name: kubernetes
         namespace: default
         path: /apis/admission.certmanager.k8s.io/v1beta1/clusterissuers
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cert-manager-webhook-tls
+  namespace: cert-manager
+type: Opaque

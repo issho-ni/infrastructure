@@ -84,11 +84,11 @@ spec:
               cpu: 50m
               memory: 64Mi
           env:
-            - name: ISSHO_CLUSTER
+            - name: ISSHO_CLUSTER_NAME
               valueFrom:
                 configMapKeyRef:
                   name: issho-cluster
-                  key: ISSHO_CLUSTER
+                  key: ISSHO_CLUSTER_NAME
           ports:
             - name: flux
               containerPort: 3030
@@ -107,7 +107,7 @@ spec:
             - --ssh-keygen-dir=/var/fluxd/keygen
             - --git-url=git@github.com:issho-ni/infrastructure
             - --git-branch=master
-            - --git-path=k8s/common,k8s/$(ISSHO_CLUSTER)
+            - --git-path=k8s/common,k8s/$(ISSHO_CLUSTER_NAME)
             - --listen-metrics=:3031
             - --log-format=json
         - name: prometheus-to-sd

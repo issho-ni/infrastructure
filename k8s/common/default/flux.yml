@@ -2,12 +2,12 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  name: flux
+  namespace: default
   labels:
     app.kubernetes.io/name: flux
   annotations:
-    iam.gke.io/gcp-service-account: ops-flux@issho-ni.iam.gserviceaccount.com
-  name: flux
-  namespace: default
+    iam.gke.io/gcp-service-account: common-flux@issho-ni.iam.gserviceaccount.com
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1

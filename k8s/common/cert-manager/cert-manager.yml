@@ -30,6 +30,8 @@ metadata:
     app.kubernetes.io/component: cert-manager
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/instance: cert-manager
+  annotations:
+    iam.gke.io/gcp-service-account: common-cert-manager@issho-ni.iam.gserviceaccount.com
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -57,6 +59,7 @@ rules:
   - apiGroups: ["apiregistration.k8s.io"]
     resources: ["apiservices"]
     verbs: ["*"]
+
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding

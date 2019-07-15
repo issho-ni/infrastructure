@@ -6,6 +6,7 @@ metadata:
   namespace: default
   labels:
     app.kubernetes.io/name: flux
+    app.kubernetes.io/instance: flux
   annotations:
     iam.gke.io/gcp-service-account: common-flux@issho-ni.iam.gserviceaccount.com
 
@@ -15,6 +16,7 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: flux
+    app.kubernetes.io/instance: flux
   name: flux
 rules:
   - apiGroups: ["*"]
@@ -30,10 +32,73 @@ metadata:
   name: flux
   labels:
     app.kubernetes.io/name: flux
+    app.kubernetes.io/instance: flux
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: flux
+subjects:
+  - kind: ServiceAccount
+    name: flux
+    namespace: default
+
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: flux
+  labels:
+    app.kubernetes.io/name: flux
+    app.kubernetes.io/instance: flux
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: "*"
+spec:
+  privileged: false
+  hostIPC: false
+  hostNetwork: false
+  hostPID: false
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: true
+  allowedCapabilities:
+    - "*"
+  fsGroup:
+    rule: RunAsAny
+  runAsUser:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  volumes:
+    - "*"
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: flux-psp
+  labels:
+    app.kubernetes.io/name: flux
+    app.kubernetes.io/instance: flux
+rules:
+  - apiGroups: ["policy"]
+    resources: ["podsecuritypolicies"]
+    verbs: ["use"]
+    resourceNames:
+      - flux
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: flux-psp
+  labels:
+    app.kubernetes.io/name: flux
+    app.kubernetes.io/instance: flux
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: flux-psp
 subjects:
   - kind: ServiceAccount
     name: flux
@@ -47,6 +112,7 @@ metadata:
   namespace: default
   labels:
     app.kubernetes.io/name: flux
+    app.kubernetes.io/instance: flux
   annotations:
     flux.weave.works/tag.flux: semver:~1
     flux.weave.works/tag.prometheus-to-sd: semver:~0
@@ -56,12 +122,14 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: flux
+      app.kubernetes.io/instance: flux
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
         app.kubernetes.io/name: flux
+        app.kubernetes.io/instance: flux
       annotations:
         prometheus.io.port: "3031"
         readiness.status.sidecar.istio.io/applicationPorts: ""

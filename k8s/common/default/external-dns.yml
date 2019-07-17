@@ -9,12 +9,11 @@ metadata:
     app.kubernetes.io/name: external-dns
   annotations:
     iam.gke.io/gcp-service-account: common-external-dns@issho-ni.iam.gserviceaccount.com
-
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  creationTimestamp: null
+  creationTimestamp:
   labels:
     api: externaldns
     kubebuilder.k8s.io: 1.0.0
@@ -73,7 +72,6 @@ spec:
               type: integer
           type: object
   version: v1alpha1
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -83,40 +81,40 @@ metadata:
     app.kubernetes.io/name: external-dns
   name: external-dns
 rules:
-  - apiGroups:
-      - ""
-    resources:
-      - services
-      - pods
-      - nodes
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - extensions
-    resources:
-      - ingresses
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - networking.istio.io
-    resources:
-      - gateways
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - externaldns.k8s.io
-    resources:
-      - dnsendpoints
-    verbs:
-      - get
-      - list
-      - watch
+- apiGroups:
+  - ""
+  resources:
+  - services
+  - pods
+  - nodes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - extensions
+  resources:
+  - ingresses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - networking.istio.io
+  resources:
+  - gateways
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - externaldns.k8s.io
+  resources:
+  - dnsendpoints
+  verbs:
+  - get
+  - list
+  - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -130,10 +128,9 @@ roleRef:
   kind: ClusterRole
   name: external-dns
 subjects:
-  - kind: ServiceAccount
-    name: external-dns
-    namespace: default
-
+- kind: ServiceAccount
+  name: external-dns
+  namespace: default
 ---
 apiVersion: v1
 kind: Service
@@ -145,15 +142,14 @@ metadata:
     app.kubernetes.io/name: external-dns
 spec:
   ports:
-    - port: 7979
-      protocol: TCP
-      targetPort: 7979
-      name: http
+  - port: 7979
+    protocol: TCP
+    targetPort: 7979
+    name: http
   selector:
     app.kubernetes.io/instance: external-dns
     app.kubernetes.io/name: external-dns
   type: ClusterIP
-
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -174,44 +170,44 @@ spec:
         app.kubernetes.io/name: external-dns
     spec:
       containers:
-        - name: external-dns
-          image: registry.opensource.zalan.do/teapot/external-dns:v0.5.14
-          imagePullPolicy: IfNotPresent
-          args:
-            - --log-level=info
-            - --domain-filter=$(ISSHO_CLUSTER_DOMAIN)
-            - --policy=sync
-            - --provider=google
-            - --google-project=issho-ni
-            - --interval=1m
-            - --registry=txt
-            - --txt-owner-id=$(ISSHO_CLUSTER_NAME)
-            - --source=service
-            - --source=ingress
-            - --source=istio-gateway
-            - --source=crd
-          env:
-            - name: ISSHO_CLUSTER_DOMAIN
-              valueFrom:
-                configMapKeyRef:
-                  name: issho-cluster
-                  key: ISSHO_CLUSTER_DOMAIN
-            - name: ISSHO_CLUSTER_NAME
-              valueFrom:
-                configMapKeyRef:
-                  name: issho-cluster
-                  key: ISSHO_CLUSTER_NAME
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 7979
-          ports:
-            - containerPort: 7979
-          securityContext:
-            capabilities:
-              drop:
-                - ALL
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
-            runAsUser: 65534
+      - name: external-dns
+        image: registry.opensource.zalan.do/teapot/external-dns:v0.5.15
+        imagePullPolicy: IfNotPresent
+        args:
+        - --log-level=info
+        - --domain-filter=$(ISSHO_CLUSTER_DOMAIN)
+        - --policy=sync
+        - --provider=google
+        - --google-project=issho-ni
+        - --interval=1m
+        - --registry=txt
+        - --txt-owner-id=$(ISSHO_CLUSTER_NAME)
+        - --source=service
+        - --source=ingress
+        - --source=istio-gateway
+        - --source=crd
+        env:
+        - name: ISSHO_CLUSTER_DOMAIN
+          valueFrom:
+            configMapKeyRef:
+              name: issho-cluster
+              key: ISSHO_CLUSTER_DOMAIN
+        - name: ISSHO_CLUSTER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: issho-cluster
+              key: ISSHO_CLUSTER_NAME
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 7979
+        ports:
+        - containerPort: 7979
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 65534
       serviceAccountName: external-dns

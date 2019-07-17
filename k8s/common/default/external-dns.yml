@@ -73,11 +73,6 @@ spec:
               type: integer
           type: object
   version: v1alpha1
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: null
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1

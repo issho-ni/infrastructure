@@ -6,4 +6,4 @@ metadata:
   namespace: default
 data:
   ISSHO_CLUSTER_NAME: ops
-  ISSHO_CLUSTER_DOMAIN: "issho-ni.co"
+  ISSHO_CLUSTER_DOMAIN: issho-ni.co

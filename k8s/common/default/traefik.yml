@@ -1,0 +1,281 @@
+---
+# Source: traefik/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traefik
+  namespace: default
+  labels:
+    app: traefik
+    chart: traefik-1.72.1
+    release: "traefik"
+    heritage: "Tiller"
+data:
+  traefik.toml: |
+    # traefik.toml
+    logLevel = "info"
+    InsecureSkipVerify = true
+    defaultEntryPoints = ["http","https"]
+    [entryPoints]
+      [entryPoints.http]
+      address = ":80"
+      compress = true
+        [entryPoints.http.redirect]
+          regex = "^http://(.*)"
+          replacement = "https://$1"
+          permanent = true
+      [entryPoints.https]
+      address = ":443"
+      compress = true
+        [entryPoints.https.tls]
+          [[entryPoints.https.tls.certificates]]
+          CertFile = "/ssl/tls.crt"
+          KeyFile = "/ssl/tls.key"
+      [entryPoints.traefik]
+      address = ":8080"
+    [ping]
+    entryPoint = "http"
+    [kubernetes]
+      [kubernetes.ingressEndpoint]
+      hostname = "localhost"
+      ip = "0.0.0.0"
+      publishedService = "default/traefik"
+    [traefikLog]
+      format = "json"
+    [acme]
+    KeyType = "RSA4096"
+    email = "ops@issho-ni.co"
+    storage = "/acme/acme.json"
+    entryPoint = "https"
+    onHostRule = true
+      [acme.dnsChallenge]
+      provider = "gcloud"
+      resolvers = ["1.1.1.1:53"]
+    [api]
+      entryPoint = "traefik"
+      dashboard = true
+    [metrics]
+      [metrics.prometheus]
+        entryPoint = "traefik"
+
+---
+# Source: traefik/templates/acme-pvc.yaml
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: traefik-acme
+  namespace: default
+  labels:
+    app: traefik
+    chart: traefik-1.72.1
+    release: "traefik"
+    heritage: "Tiller"
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: "1Gi"
+
+---
+# Source: traefik/templates/rbac.yaml
+
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: traefik
+  namespace: default
+  annotations:
+    iam.gke.io/gcp-service-account: common-traefik@issho-ni.iam.gserviceaccount.com
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: traefik
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - services
+      - endpoints
+      - secrets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - extensions
+    resources:
+      - ingresses/status
+    verbs:
+      - update
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: traefik
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefik
+subjects:
+  - kind: ServiceAccount
+    name: traefik
+    namespace: default
+
+---
+# Source: traefik/templates/dashboard-service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-dashboard
+  namespace: default
+  labels:
+    app: traefik
+    chart: traefik-1.72.1
+    release: "traefik"
+    heritage: "Tiller"
+spec:
+  type: ClusterIP
+  selector:
+    app: traefik
+    release: traefik
+  ports:
+    - name: dashboard-http
+      port: 80
+      targetPort: 8080
+
+---
+# Source: traefik/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik
+  namespace: default
+  labels:
+    app: traefik
+    chart: traefik-1.72.1
+    release: "traefik"
+    heritage: "Tiller"
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: traefik
+    release: traefik
+  ports:
+    - port: 80
+      name: http
+      targetPort: http
+    - port: 443
+      name: https
+      targetPort: https
+
+---
+# Source: traefik/templates/deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traefik
+  namespace: default
+  labels:
+    app: traefik
+    chart: traefik-1.72.1
+    release: "traefik"
+    heritage: "Tiller"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik
+      release: traefik
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+
+  template:
+    metadata:
+      annotations:
+        checksum/config: c4f9aa7564d01c0a3313bae59c95629144203fec8ef07cfebfd73bc804f59507
+      labels:
+        app: traefik
+        chart: traefik-1.72.1
+        release: "traefik"
+        heritage: "Tiller"
+    spec:
+      serviceAccountName: traefik
+      terminationGracePeriodSeconds: 60
+      containers:
+        - image: traefik:1.7.12
+          name: traefik
+          resources: {}
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 80
+            failureThreshold: 1
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 2
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 80
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 2
+          env:
+            - name: GCE_PROJECT
+              valueFrom:
+                secretKeyRef:
+                  name: traefik-dnsprovider-config
+                  key: GCE_PROJECT
+          volumeMounts:
+            - mountPath: /config
+              name: config
+            - mountPath: /ssl
+              name: ssl
+            - mountPath: /acme
+              name: acme
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: httpn
+              containerPort: 8880
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+            - name: dash
+              containerPort: 8080
+              protocol: TCP
+          args:
+            - --configfile=/config/traefik.toml
+      volumes:
+        - name: config
+          configMap:
+            name: traefik
+        - name: ssl
+          secret:
+            secretName: traefik-default-cert
+        - name: acme
+          persistentVolumeClaim:
+            claimName: traefik-acme

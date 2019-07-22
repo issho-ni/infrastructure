@@ -14,6 +14,10 @@ metadata:
   annotations:
     ingress.kubernetes.io/custom-request-headers: "l5d-dst-override: traefik.default.svc.cluster.local:8080"
     ingress.kubernetes.io/custom-response-headers: "l5d-remote-ip: || l5d-server-id:"
+    ingress.kubernetes.io/auth-type: forward
+    ingress.kubernetes.io/auth-url: https://auth.ops.issho-ni.co/oauth2/auth
+    ingress.kubernetes.io/auth-trust-headers: "true"
+    ingress.kubernetes.io/auth-response-headers: Authorization, Set-Cookie, X-Auth-User, X-Secret
 spec:
   rules:
     - host: traefik.ops.issho-ni.co

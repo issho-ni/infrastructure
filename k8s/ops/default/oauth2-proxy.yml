@@ -61,11 +61,6 @@ spec:
       release: oauth2-proxy
   template:
     metadata:
-      annotations:
-        checksum/config: bf0cb9ca5ce3dcaa8cec57a52ecef0dc0f5ff5a9815bc2224e3f3298e23717fa
-        checksum/config-emails: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
-        checksum/secret: aa3f7f0dd73d13db233ec5fa1f8f1698706487099d00bafd4192ae4815b338fb
-        checksum/google-secret: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       labels:
         app: oauth2-proxy
         release: "oauth2-proxy"

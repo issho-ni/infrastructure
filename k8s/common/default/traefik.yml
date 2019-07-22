@@ -210,7 +210,6 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: c4f9aa7564d01c0a3313bae59c95629144203fec8ef07cfebfd73bc804f59507
         config.linkerd.io/skip-inbound-ports: 80,443
       labels:
         app: traefik

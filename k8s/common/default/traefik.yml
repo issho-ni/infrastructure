@@ -21,13 +21,13 @@ data:
       address = ":80"
       compress = true
         [entryPoints.http.redirect]
-          regex = "^http://(.*)"
-          replacement = "https://$1"
-          permanent = true
+        regex = "^http://(.*)"
+        replacement = "https://$1"
+        permanent = true
         [entryPoints.http.proxyProtocol]
-          trustedIPs = ["127.0.0.1"]
+        trustedIPs = ["127.0.0.1"]
         [entryPoints.http.forwardedHeaders]
-          trustedIPs = ["127.0.0.1"]
+        trustedIPs = ["127.0.0.1"]
       [entryPoints.https]
       address = ":443"
       compress = true
@@ -35,10 +35,10 @@ data:
           [[entryPoints.https.tls.certificates]]
           CertFile = "/ssl/tls.crt"
           KeyFile = "/ssl/tls.key"
-        [entrypoints.https.proxyprotocol]
-          trustedIPs = ["127.0.0.1"]
+        [entryPoints.https.proxyprotocol]
+        trustedIPs = ["127.0.0.1"]
         [entryPoints.https.forwardedHeaders]
-          trustedIPs = ["127.0.0.1"]
+        trustedIPs = ["127.0.0.1"]
       [entryPoints.traefik]
       address = ":8080"
     [ping]
@@ -49,7 +49,7 @@ data:
       ip = "0.0.0.0"
       publishedService = "default/traefik"
     [traefikLog]
-      format = "json"
+    format = "json"
     [acme]
     KeyType = "RSA4096"
     email = "ops@issho-ni.co"
@@ -58,13 +58,13 @@ data:
     onHostRule = true
       [acme.dnsChallenge]
       provider = "gcloud"
-      resolvers = ["1.1.1.1:53"]
+      delayBeforeCheck = 60
     [api]
-      entryPoint = "traefik"
-      dashboard = true
+    entryPoint = "traefik"
+    dashboard = true
     [metrics]
       [metrics.prometheus]
-        entryPoint = "traefik"
+      entryPoint = "traefik"
 
 ---
 # Source: traefik/templates/acme-pvc.yaml

@@ -1,0 +1,24 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: linkerd-web
+  namespace: linkerd
+  labels:
+    linkerd.io/control-plane-component: web
+    linkerd.io/control-plane-ns: linkerd
+  annotations:
+    ingress.kubernetes.io/custom-request-headers: "l5d-dst-override: linkerd-web.linkerd.svc.cluster.local:8084"
+    ingress.kubernetes.io/custom-response-headers: "l5d-remote-ip: || l5d-server-id:"
+    ingress.kubernetes.io/auth-type: forward
+    ingress.kubernetes.io/auth-url: https://auth.ops.issho-ni.co/oauth2/auth
+    ingress.kubernetes.io/auth-trust-headers: "true"
+    ingress.kubernetes.io/auth-response-headers: Authorization, Set-Cookie, X-Auth-User, X-Secret
+spec:
+  rules:
+    - host: linkerd.ops.issho-ni.co
+      http:
+        paths:
+          - backend:
+              serviceName: linkerd-web
+              servicePort: http

@@ -24,6 +24,10 @@ data:
           regex = "^http://(.*)"
           replacement = "https://$1"
           permanent = true
+        [entryPoints.http.proxyProtocol]
+          trustedIPs = ["127.0.0.1"]
+        [entryPoints.http.forwardedHeaders]
+          trustedIPs = ["127.0.0.1"]
       [entryPoints.https]
       address = ":443"
       compress = true
@@ -31,6 +35,10 @@ data:
           [[entryPoints.https.tls.certificates]]
           CertFile = "/ssl/tls.crt"
           KeyFile = "/ssl/tls.key"
+        [entrypoints.https.proxyprotocol]
+          trustedIPs = ["127.0.0.1"]
+        [entryPoints.https.forwardedHeaders]
+          trustedIPs = ["127.0.0.1"]
       [entryPoints.traefik]
       address = ":8080"
     [ping]
@@ -209,8 +217,6 @@ spec:
 
   template:
     metadata:
-      annotations:
-        config.linkerd.io/skip-inbound-ports: 80,443
       labels:
         app: traefik
         chart: traefik-1.72.1

@@ -111,6 +111,8 @@ metadata:
   name: flux
   namespace: default
   labels:
+    app: flux
+    name: flux
     app.kubernetes.io/name: flux
     app.kubernetes.io/instance: flux
   annotations:
@@ -128,6 +130,8 @@ spec:
   template:
     metadata:
       labels:
+        app: flux
+        name: flux
         app.kubernetes.io/name: flux
         app.kubernetes.io/instance: flux
       annotations:

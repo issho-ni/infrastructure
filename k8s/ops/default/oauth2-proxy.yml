@@ -53,6 +53,9 @@ metadata:
     heritage: Tiller
     release: oauth2-proxy
   name: oauth2-proxy
+  annotations:
+    flux.weave.works/tag.oauth2-proxy: semver:~3
+    flux.weave.works/automated: "true"
 spec:
   replicas: 2
   selector:

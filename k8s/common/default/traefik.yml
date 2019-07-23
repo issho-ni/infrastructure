@@ -203,6 +203,9 @@ metadata:
     chart: traefik-1.72.1
     release: "traefik"
     heritage: "Tiller"
+  annotations:
+    flux.weave.works/tag.traefik: semver:~1
+    flux.weave.works/automated: "true"
 spec:
   replicas: 1
   selector:

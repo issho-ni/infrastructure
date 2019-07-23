@@ -54,6 +54,10 @@ metadata:
     chart: "memcached-2.9.0"
     release: "memcached"
     heritage: "Tiller"
+  annotations:
+    flux.weave.works/tag.memcached: regexp:^1\.\d+\.\d+-alpine$
+    flux.weave.works/tag.metrics: semver:~0
+    flux.weave.works/automated: "true"
 spec:
   serviceName: memcached
   replicas: 2

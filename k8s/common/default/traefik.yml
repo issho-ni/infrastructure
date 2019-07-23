@@ -53,7 +53,8 @@ data:
     [acme]
     KeyType = "RSA4096"
     email = "ops@issho-ni.co"
-    storage = "/acme/acme.json"
+    storage = "traefik/acme/account"
+    storageFile = "/acme/acme.json"
     entryPoint = "https"
     onHostRule = true
       [acme.dnsChallenge]
@@ -65,6 +66,9 @@ data:
     [metrics]
       [metrics.prometheus]
       entryPoint = "traefik"
+    [consul]
+    endpoint = "consul.default.svc.cluster.local:8500"
+    watch = false
 
 ---
 # Source: traefik/templates/acme-pvc.yaml

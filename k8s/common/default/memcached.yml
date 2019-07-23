@@ -25,15 +25,9 @@ spec:
       terminationGracePeriodSeconds: 180
       containers:
         - name: memcached
-          image: gcr.io/cloud-marketplace/google/memcached:1.5
+          image: memcached:1.5.16-alpine
           imagePullPolicy: Always
-          env:
-            - name: MEMCACHED_PROMETHEUS_ENABLED
-              value: "true"
           ports:
-            - name: prometheus
-              containerPort: 9150
-              protocol: TCP
             - name: memcached
               containerPort: 11211
               protocol: TCP

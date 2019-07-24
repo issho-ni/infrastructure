@@ -317,7 +317,7 @@ spec:
             - name: CONCOURSE_COOKIE_SECURE
               value: "true"
             - name: CONCOURSE_AUTH_DURATION
-              value: 30d
+              value: 24h
             - name: CONCOURSE_SESSION_SIGNING_KEY
               value: /concourse-keys/session_signing_key
             - name: CONCOURSE_MAIN_TEAM_GITHUB_TEAM

@@ -209,7 +209,7 @@ metadata:
     flux.weave.works/tag.prometheus-to-sd: semver:~0
     flux.weave.works/automated: "true"
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/component: concourse-web

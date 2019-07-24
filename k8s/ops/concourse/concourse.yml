@@ -320,8 +320,8 @@ spec:
               value: 30d
             - name: CONCOURSE_SESSION_SIGNING_KEY
               value: /concourse-keys/session_signing_key
-            - name: CONCOURSE_MAIN_TEAM_GITHUB_ORG
-              value: issho-ni
+            - name: CONCOURSE_MAIN_TEAM_GITHUB_TEAM
+              value: issho-ni:ops
             - name: CONCOURSE_GITHUB_CLIENT_ID
               valueFrom:
                 secretKeyRef:

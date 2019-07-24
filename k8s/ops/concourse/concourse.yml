@@ -7,7 +7,6 @@ metadata:
     app.kubernetes.io/component: concourse-web
     app.kubernetes.io/instance: concourse
     app.kubernetes.io/name: concourse
-
 ---
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
@@ -23,7 +22,6 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/component: concourse-worker
-
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -50,7 +48,6 @@ metadata:
     app.kubernetes.io/component: concourse-web
     app.kubernetes.io/instance: concourse
     app.kubernetes.io/name: concourse
-
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -61,7 +58,6 @@ metadata:
     app.kubernetes.io/component: concourse-worker
     app.kubernetes.io/instance: concourse
     app.kubernetes.io/name: concourse
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
@@ -95,7 +91,6 @@ rules:
       - privileged
     verbs:
       - use
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: RoleBinding
@@ -114,7 +109,6 @@ subjects:
   - kind: ServiceAccount
     name: concourse-web
     namespace: concourse
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: RoleBinding
@@ -132,7 +126,6 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: concourse-worker
-
 ---
 apiVersion: v1
 kind: Service
@@ -162,7 +155,6 @@ spec:
     app.kubernetes.io/component: concourse-web
     app.kubernetes.io/instance: concourse
     app.kubernetes.io/name: concourse
-
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -184,7 +176,6 @@ spec:
           - backend:
               serviceName: concourse-web
               servicePort: atc
-
 ---
 apiVersion: v1
 kind: Service
@@ -203,7 +194,6 @@ spec:
     app.kubernetes.io/component: concourse-worker
     app.kubernetes.io/instance: concourse
     app.kubernetes.io/name: concourse
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -235,7 +225,7 @@ spec:
       serviceAccountName: concourse-web
       containers:
         - name: concourse-web
-          image: concourse/concourse:5.3.0
+          image: concourse/concourse:5.4.0
           imagePullPolicy: IfNotPresent
           args:
             - web
@@ -434,7 +424,6 @@ spec:
           secret:
             secretName: concourse-web
             defaultMode: 0400
-
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
@@ -453,7 +442,6 @@ spec:
     kind: StatefulSet
     name: concourse-worker
   targetCPUUtilizationPercentage: 80
-
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -486,7 +474,7 @@ spec:
       terminationGracePeriodSeconds: 60
       initContainers:
         - name: concourse-worker-init-rm
-          image: concourse/concourse:5.3.0
+          image: concourse/concourse:5.4.0
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
@@ -499,7 +487,7 @@ spec:
               mountPath: /concourse-work-dir
       containers:
         - name: concourse-worker
-          image: concourse/concourse:5.3.0
+          image: concourse/concourse:5.4.0
           imagePullPolicy: IfNotPresent
           args:
             - worker

@@ -9,3 +9,13 @@ metadata:
     app.kubernetes.io/name: concourse
   annotations:
     linkerd.io/inject: enabled
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: concourse-main
+  labels:
+    app.kubernetes.io/component: concourse-web
+    app.kubernetes.io/instance: concourse
+    app.kubernetes.io/name: concourse

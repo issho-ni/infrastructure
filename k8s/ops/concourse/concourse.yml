@@ -312,6 +312,13 @@ spec:
               value: 24h
             - name: CONCOURSE_SESSION_SIGNING_KEY
               value: /concourse-keys/session_signing_key
+            - name: CONCOURSE_ADD_LOCAL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: concourse-web
+                  key: local-users
+            - name: CONCOURSE_MAIN_TEAM_LOCAL_USER
+              value: concourse
             - name: CONCOURSE_MAIN_TEAM_GITHUB_TEAM
               value: issho-ni:ops
             - name: CONCOURSE_GITHUB_CLIENT_ID

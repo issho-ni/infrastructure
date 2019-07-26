@@ -482,7 +482,7 @@ spec:
             - name: CONCOURSE_BIND_PORT
               value: "7777"
             - name: CONCOURSE_LOG_LEVEL
-              value: info
+              value: debug
             - name: CONCOURSE_TSA_HOST
               value: concourse-web:2222
             - name: CONCOURSE_TSA_PUBLIC_KEY
@@ -492,7 +492,7 @@ spec:
             - name: CONCOURSE_GARDEN_BIN
               value: gdn
             - name: CONCOURSE_BAGGAGECLAIM_LOG_LEVEL
-              value: info
+              value: debug
             - name: CONCOURSE_BAGGAGECLAIM_BIND_IP
               value: 127.0.0.1
             - name: CONCOURSE_BAGGAGECLAIM_BIND_PORT

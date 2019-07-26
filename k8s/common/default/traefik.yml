@@ -19,7 +19,6 @@ data:
     [entryPoints]
       [entryPoints.http]
       address = ":80"
-      compress = true
         [entryPoints.http.redirect]
         regex = "^http://(.*)"
         replacement = "https://$1"
@@ -30,7 +29,6 @@ data:
         trustedIPs = ["127.0.0.1"]
       [entryPoints.https]
       address = ":443"
-      compress = true
         [entryPoints.https.tls]
           [[entryPoints.https.tls.certificates]]
           CertFile = "/ssl/tls.crt"

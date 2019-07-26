@@ -395,24 +395,6 @@ spec:
             secretName: concourse-web
             defaultMode: 0400
 ---
-apiVersion: autoscaling/v1
-kind: HorizontalPodAutoscaler
-metadata:
-  name: concourse-worker
-  namespace: concourse
-  labels:
-    app.kubernetes.io/component: concourse-worker
-    app.kubernetes.io/instance: concourse
-    app.kubernetes.io/name: concourse
-spec:
-  minReplicas: 1
-  maxReplicas: 3
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: StatefulSet
-    name: concourse-worker
-  targetCPUUtilizationPercentage: 80
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -427,6 +409,7 @@ metadata:
     flux.weave.works/tag.concourse-worker: semver:~5
     flux.weave.works/automated: "true"
 spec:
+  replicas: 1
   serviceName: concourse-worker
   selector:
     matchLabels:

@@ -447,6 +447,8 @@ spec:
         app.kubernetes.io/component: concourse-worker
         app.kubernetes.io/instance: concourse
         app.kubernetes.io/name: concourse
+      annotations:
+        linkerd.io/inject: disabled
     spec:
       serviceAccountName: concourse-worker
       terminationGracePeriodSeconds: 60

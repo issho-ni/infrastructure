@@ -249,7 +249,7 @@ spec:
             - name: CONCOURSE_SECRET_RETRY_INTERVAL
               value: 1s
             - name: CONCOURSE_LOG_LEVEL
-              value: debug
+              value: info
             - name: CONCOURSE_BIND_PORT
               value: "8080"
             - name: CONCOURSE_BIND_IP
@@ -338,7 +338,7 @@ spec:
             - name: CONCOURSE_PEER_ADDRESS
               value: $(POD_IP)
             - name: CONCOURSE_TSA_LOG_LEVEL
-              value: debug
+              value: info
             - name: CONCOURSE_TSA_BIND_IP
               value: 0.0.0.0
             - name: CONCOURSE_TSA_BIND_PORT
@@ -489,7 +489,7 @@ spec:
             - name: CONCOURSE_BIND_PORT
               value: "7777"
             - name: CONCOURSE_LOG_LEVEL
-              value: debug
+              value: info
             - name: CONCOURSE_TSA_HOST
               value: concourse-web:2222
             - name: CONCOURSE_TSA_PUBLIC_KEY
@@ -499,7 +499,7 @@ spec:
             - name: CONCOURSE_GARDEN_BIN
               value: gdn
             - name: CONCOURSE_BAGGAGECLAIM_LOG_LEVEL
-              value: debug
+              value: info
             - name: CONCOURSE_BAGGAGECLAIM_BIND_IP
               value: 127.0.0.1
             - name: CONCOURSE_BAGGAGECLAIM_BIND_PORT

@@ -309,7 +309,7 @@ spec:
             - name: CONCOURSE_COOKIE_SECURE
               value: "true"
             - name: CONCOURSE_AUTH_DURATION
-              value: 24h
+              value: 720h
             - name: CONCOURSE_SESSION_SIGNING_KEY
               value: /concourse-keys/session_signing_key
             - name: CONCOURSE_ADD_LOCAL_USER

@@ -50,6 +50,8 @@ metadata:
     app.kubernetes.io/component: concourse-worker
     app.kubernetes.io/instance: concourse
     app.kubernetes.io/name: concourse
+  annotations:
+    iam.gke.io/gcp-service-account: ops-concourse@issho-ni.iam.gserviceaccount.com
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole

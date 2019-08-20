@@ -170,7 +170,7 @@ spec:
     spec:
       containers:
       - name: external-dns
-        image: registry.opensource.zalan.do/teapot/external-dns:v0.5.16
+        image: registry.opensource.zalan.do/teapot/external-dns:v0.5.15
         imagePullPolicy: IfNotPresent
         args:
         - --log-level=info

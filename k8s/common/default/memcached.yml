@@ -79,7 +79,7 @@ spec:
                 release: memcached
       containers:
       - name: memcached
-        image: memcached:1.5.16-alpine
+        image: memcached:1.5.17-alpine
         imagePullPolicy: Always
         ports:
         - name: memcache

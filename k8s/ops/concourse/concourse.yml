@@ -62,9 +62,9 @@ metadata:
     app.kubernetes.io/instance: concourse
     app.kubernetes.io/name: concourse
 rules:
-  - apiGroups: [""]
-    resources: ["secrets"]
-    verbs: ["get"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -77,14 +77,14 @@ metadata:
     app.kubernetes.io/instance: concourse
     app.kubernetes.io/name: concourse
 rules:
-  - apiGroups:
-      - extensions
-    resources:
-      - podsecuritypolicies
-    resourceNames:
-      - privileged
-    verbs:
-      - use
+- apiGroups:
+  - extensions
+  resources:
+  - podsecuritypolicies
+  resourceNames:
+  - privileged
+  verbs:
+  - use
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: RoleBinding
@@ -100,9 +100,9 @@ roleRef:
   kind: ClusterRole
   name: concourse-web
 subjects:
-  - kind: ServiceAccount
-    name: concourse-web
-    namespace: concourse
+- kind: ServiceAccount
+  name: concourse-web
+  namespace: concourse
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: RoleBinding
@@ -118,8 +118,8 @@ roleRef:
   kind: Role
   name: concourse-worker
 subjects:
-  - kind: ServiceAccount
-    name: concourse-worker
+- kind: ServiceAccount
+  name: concourse-worker
 ---
 apiVersion: v1
 kind: Service
@@ -136,15 +136,15 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: atc
-      port: 8080
-      targetPort: atc
-    - name: tsa
-      port: 2222
-      targetPort: tsa
-    - name: prometheus
-      port: 9391
-      targetPort: prometheus
+  - name: atc
+    port: 8080
+    targetPort: atc
+  - name: tsa
+    port: 2222
+    targetPort: tsa
+  - name: prometheus
+    port: 9391
+    targetPort: prometheus
   selector:
     app.kubernetes.io/component: concourse-web
     app.kubernetes.io/instance: concourse
@@ -164,12 +164,12 @@ metadata:
     ingress.kubernetes.io/custom-response-headers: "l5d-remote-ip: || l5d-server-id:"
 spec:
   rules:
-    - host: ci.issho-ni.co
-      http:
-        paths:
-          - backend:
-              serviceName: concourse-web
-              servicePort: atc
+  - host: ci.issho-ni.co
+    http:
+      paths:
+      - backend:
+          serviceName: concourse-web
+          servicePort: atc
 ---
 apiVersion: v1
 kind: Service
@@ -218,191 +218,191 @@ spec:
     spec:
       serviceAccountName: concourse-web
       containers:
-        - name: concourse-web
-          image: concourse/concourse:5.4.1
-          imagePullPolicy: IfNotPresent
-          args:
-            - web
-          env:
-            - name: CONCOURSE_CLUSTER_NAME
-              value: 一緒に
-            - name: CONCOURSE_ENABLE_GLOBAL_RESOURCES
-              value: "false"
-            - name: CONCOURSE_ENABLE_BUILD_AUDITING
-              value: "true"
-            - name: CONCOURSE_ENABLE_CONTAINER_AUDITING
-              value: "true"
-            - name: CONCOURSE_ENABLE_JOB_AUDITING
-              value: "true"
-            - name: CONCOURSE_ENABLE_PIPELINE_AUDITING
-              value: "true"
-            - name: CONCOURSE_ENABLE_RESOURCE_AUDITING
-              value: "true"
-            - name: CONCOURSE_ENABLE_SYSTEM_AUDITING
-              value: "true"
-            - name: CONCOURSE_ENABLE_TEAM_AUDITING
-              value: "true"
-            - name: CONCOURSE_ENABLE_WORKER_AUDITING
-              value: "true"
-            - name: CONCOURSE_ENABLE_VOLUME_AUDITING
-              value: "true"
-            - name: CONCOURSE_SECRET_RETRY_ATTEMPTS
-              value: "5"
-            - name: CONCOURSE_SECRET_RETRY_INTERVAL
-              value: 1s
-            - name: CONCOURSE_LOG_LEVEL
-              value: info
-            - name: CONCOURSE_BIND_PORT
-              value: "8080"
-            - name: CONCOURSE_BIND_IP
-              value: 0.0.0.0
-            - name: CONCOURSE_EXTERNAL_URL
-              value: https://ci.issho-ni.co
-            - name: CONCOURSE_DEBUG_BIND_IP
-              value: 127.0.0.1
-            - name: CONCOURSE_DEBUG_BIND_PORT
-              value: "8079"
-            - name: CONCOURSE_INTERCEPT_IDLE_TIMEOUT
-              value: 0m
-            - name: CONCOURSE_GLOBAL_RESOURCE_CHECK_TIMEOUT
-              value: 1h
-            - name: CONCOURSE_RESOURCE_CHECKING_INTERVAL
-              value: 1m
-            - name: CONCOURSE_RESOURCE_TYPE_CHECKING_INTERVAL
-              value: 1m
-            - name: CONCOURSE_CONTAINER_PLACEMENT_STRATEGY
-              value: volume-locality
-            - name: CONCOURSE_BAGGAGECLAIM_RESPONSE_HEADER_TIMEOUT
-              value: 1m
-            - name: CONCOURSE_BUILD_TRACKER_INTERVAL
-              value: 10s
-            - name: CONCOURSE_POSTGRES_HOST
-              value: 10.27.144.2
-            - name: CONCOURSE_POSTGRES_PORT
-              value: "5432"
-            - name: CONCOURSE_POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: concourse-web
-                  key: postgresql-user
-            - name: CONCOURSE_POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: concourse-web
-                  key: postgresql-password
-            - name: CONCOURSE_POSTGRES_CONNECT_TIMEOUT
-              value: 5m
-            - name: CONCOURSE_POSTGRES_DATABASE
-              value: atc
-            - name: CONCOURSE_KUBERNETES_IN_CLUSTER
-              value: "true"
-            - name: CONCOURSE_KUBERNETES_NAMESPACE_PREFIX
-              value: concourse-
-            - name: CONCOURSE_PROMETHEUS_BIND_IP
-              value: 127.0.0.1
-            - name: CONCOURSE_PROMETHEUS_BIND_PORT
-              value: "9391"
-            - name: CONCOURSE_GC_INTERVAL
-              value: 30s
-            - name: CONCOURSE_GC_ONE_OFF_GRACE_PERIOD
-              value: 5m
-            - name: CONCOURSE_GC_MISSING_GRACE_PERIOD
-              value: 5m
-            - name: CONCOURSE_COOKIE_SECURE
-              value: "true"
-            - name: CONCOURSE_AUTH_DURATION
-              value: 720h
-            - name: CONCOURSE_SESSION_SIGNING_KEY
-              value: /concourse-keys/session_signing_key
-            - name: CONCOURSE_ADD_LOCAL_USER
-              valueFrom:
-                secretKeyRef:
-                  name: concourse-web
-                  key: local-users
-            - name: CONCOURSE_MAIN_TEAM_LOCAL_USER
-              value: concourse
-            - name: CONCOURSE_MAIN_TEAM_GITHUB_TEAM
-              value: issho-ni:ops
-            - name: CONCOURSE_GITHUB_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: concourse-web
-                  key: github-client-id
-            - name: CONCOURSE_GITHUB_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: concourse-web
-                  key: github-client-secret
-            - name: POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
-            - name: CONCOURSE_PEER_ADDRESS
-              value: $(POD_IP)
-            - name: CONCOURSE_TSA_LOG_LEVEL
-              value: info
-            - name: CONCOURSE_TSA_BIND_IP
-              value: 0.0.0.0
-            - name: CONCOURSE_TSA_BIND_PORT
-              value: "2222"
-            - name: CONCOURSE_TSA_DEBUG_BIND_IP
-              value: 127.0.0.1
-            - name: CONCOURSE_TSA_DEBUG_BIND_PORT
-              value: "2221"
-            - name: CONCOURSE_TSA_HOST_KEY
-              value: /concourse-keys/host_key
-            - name: CONCOURSE_TSA_AUTHORIZED_KEYS
-              value: /concourse-keys/worker_key.pub
-            - name: CONCOURSE_TSA_HEARTBEAT_INTERVAL
-              value: 30s
-          ports:
-            - name: atc
-              containerPort: 8080
-            - name: tsa
-              containerPort: 2222
-            - name: atc-debug
-              containerPort: 8079
-            - name: prometheus
-              containerPort: 9391
-          livenessProbe:
-            failureThreshold: 5
-            httpGet:
-              path: /api/v1/info
-              port: atc
-            initialDelaySeconds: 10
-            periodSeconds: 15
-            timeoutSeconds: 3
-          readinessProbe:
-            httpGet:
-              path: /api/v1/info
-              port: atc
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-          volumeMounts:
-            - name: concourse-keys
-              mountPath: /concourse-keys
-              readOnly: true
-            - name: auth-keys
-              mountPath: /concourse-auth
-              readOnly: true
-      volumes:
+      - name: concourse-web
+        image: concourse/concourse:5.5.0
+        imagePullPolicy: IfNotPresent
+        args:
+        - web
+        env:
+        - name: CONCOURSE_CLUSTER_NAME
+          value: 一緒に
+        - name: CONCOURSE_ENABLE_GLOBAL_RESOURCES
+          value: "false"
+        - name: CONCOURSE_ENABLE_BUILD_AUDITING
+          value: "true"
+        - name: CONCOURSE_ENABLE_CONTAINER_AUDITING
+          value: "true"
+        - name: CONCOURSE_ENABLE_JOB_AUDITING
+          value: "true"
+        - name: CONCOURSE_ENABLE_PIPELINE_AUDITING
+          value: "true"
+        - name: CONCOURSE_ENABLE_RESOURCE_AUDITING
+          value: "true"
+        - name: CONCOURSE_ENABLE_SYSTEM_AUDITING
+          value: "true"
+        - name: CONCOURSE_ENABLE_TEAM_AUDITING
+          value: "true"
+        - name: CONCOURSE_ENABLE_WORKER_AUDITING
+          value: "true"
+        - name: CONCOURSE_ENABLE_VOLUME_AUDITING
+          value: "true"
+        - name: CONCOURSE_SECRET_RETRY_ATTEMPTS
+          value: "5"
+        - name: CONCOURSE_SECRET_RETRY_INTERVAL
+          value: 1s
+        - name: CONCOURSE_LOG_LEVEL
+          value: info
+        - name: CONCOURSE_BIND_PORT
+          value: "8080"
+        - name: CONCOURSE_BIND_IP
+          value: 0.0.0.0
+        - name: CONCOURSE_EXTERNAL_URL
+          value: https://ci.issho-ni.co
+        - name: CONCOURSE_DEBUG_BIND_IP
+          value: 127.0.0.1
+        - name: CONCOURSE_DEBUG_BIND_PORT
+          value: "8079"
+        - name: CONCOURSE_INTERCEPT_IDLE_TIMEOUT
+          value: 0m
+        - name: CONCOURSE_GLOBAL_RESOURCE_CHECK_TIMEOUT
+          value: 1h
+        - name: CONCOURSE_RESOURCE_CHECKING_INTERVAL
+          value: 1m
+        - name: CONCOURSE_RESOURCE_TYPE_CHECKING_INTERVAL
+          value: 1m
+        - name: CONCOURSE_CONTAINER_PLACEMENT_STRATEGY
+          value: volume-locality
+        - name: CONCOURSE_BAGGAGECLAIM_RESPONSE_HEADER_TIMEOUT
+          value: 1m
+        - name: CONCOURSE_BUILD_TRACKER_INTERVAL
+          value: 10s
+        - name: CONCOURSE_POSTGRES_HOST
+          value: 10.27.144.2
+        - name: CONCOURSE_POSTGRES_PORT
+          value: "5432"
+        - name: CONCOURSE_POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: concourse-web
+              key: postgresql-user
+        - name: CONCOURSE_POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: concourse-web
+              key: postgresql-password
+        - name: CONCOURSE_POSTGRES_CONNECT_TIMEOUT
+          value: 5m
+        - name: CONCOURSE_POSTGRES_DATABASE
+          value: atc
+        - name: CONCOURSE_KUBERNETES_IN_CLUSTER
+          value: "true"
+        - name: CONCOURSE_KUBERNETES_NAMESPACE_PREFIX
+          value: concourse-
+        - name: CONCOURSE_PROMETHEUS_BIND_IP
+          value: 127.0.0.1
+        - name: CONCOURSE_PROMETHEUS_BIND_PORT
+          value: "9391"
+        - name: CONCOURSE_GC_INTERVAL
+          value: 30s
+        - name: CONCOURSE_GC_ONE_OFF_GRACE_PERIOD
+          value: 5m
+        - name: CONCOURSE_GC_MISSING_GRACE_PERIOD
+          value: 5m
+        - name: CONCOURSE_COOKIE_SECURE
+          value: "true"
+        - name: CONCOURSE_AUTH_DURATION
+          value: 720h
+        - name: CONCOURSE_SESSION_SIGNING_KEY
+          value: /concourse-keys/session_signing_key
+        - name: CONCOURSE_ADD_LOCAL_USER
+          valueFrom:
+            secretKeyRef:
+              name: concourse-web
+              key: local-users
+        - name: CONCOURSE_MAIN_TEAM_LOCAL_USER
+          value: concourse
+        - name: CONCOURSE_MAIN_TEAM_GITHUB_TEAM
+          value: issho-ni:ops
+        - name: CONCOURSE_GITHUB_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: concourse-web
+              key: github-client-id
+        - name: CONCOURSE_GITHUB_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: concourse-web
+              key: github-client-secret
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: CONCOURSE_PEER_ADDRESS
+          value: $(POD_IP)
+        - name: CONCOURSE_TSA_LOG_LEVEL
+          value: info
+        - name: CONCOURSE_TSA_BIND_IP
+          value: 0.0.0.0
+        - name: CONCOURSE_TSA_BIND_PORT
+          value: "2222"
+        - name: CONCOURSE_TSA_DEBUG_BIND_IP
+          value: 127.0.0.1
+        - name: CONCOURSE_TSA_DEBUG_BIND_PORT
+          value: "2221"
+        - name: CONCOURSE_TSA_HOST_KEY
+          value: /concourse-keys/host_key
+        - name: CONCOURSE_TSA_AUTHORIZED_KEYS
+          value: /concourse-keys/worker_key.pub
+        - name: CONCOURSE_TSA_HEARTBEAT_INTERVAL
+          value: 30s
+        ports:
+        - name: atc
+          containerPort: 8080
+        - name: tsa
+          containerPort: 2222
+        - name: atc-debug
+          containerPort: 8079
+        - name: prometheus
+          containerPort: 9391
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /api/v1/info
+            port: atc
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          timeoutSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /api/v1/info
+            port: atc
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        volumeMounts:
         - name: concourse-keys
-          secret:
-            secretName: concourse-web
-            defaultMode: 0400
-            items:
-              - key: host-key
-                path: host_key
-              - key: session-signing-key
-                path: session_signing_key
-              - key: worker-key-pub
-                path: worker_key.pub
+          mountPath: /concourse-keys
+          readOnly: true
         - name: auth-keys
-          secret:
-            secretName: concourse-web
-            defaultMode: 0400
+          mountPath: /concourse-auth
+          readOnly: true
+      volumes:
+      - name: concourse-keys
+        secret:
+          secretName: concourse-web
+          defaultMode: 0400
+          items:
+          - key: host-key
+            path: host_key
+          - key: session-signing-key
+            path: session_signing_key
+          - key: worker-key-pub
+            path: worker_key.pub
+      - name: auth-keys
+        secret:
+          secretName: concourse-web
+          defaultMode: 0400
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -437,140 +437,140 @@ spec:
       serviceAccountName: concourse-worker
       terminationGracePeriodSeconds: 60
       initContainers:
-        - name: concourse-worker-init-rm
-          image: concourse/concourse:5.4.1
-          imagePullPolicy: IfNotPresent
-          command:
-            - /bin/sh
-          args:
-            - -ce
-            - |-
-              rm -rf /concourse-work-dir/*
-          volumeMounts:
-            - name: concourse-work-dir
-              mountPath: /concourse-work-dir
+      - name: concourse-worker-init-rm
+        image: concourse/concourse:5.5.0
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/sh
+        args:
+        - -ce
+        - |-
+          rm -rf /concourse-work-dir/*
+        volumeMounts:
+        - name: concourse-work-dir
+          mountPath: /concourse-work-dir
       containers:
-        - name: concourse-worker
-          image: concourse/concourse:5.4.1
-          imagePullPolicy: IfNotPresent
-          args:
-            - worker
-          livenessProbe:
-            failureThreshold: 5
-            httpGet:
-              path: /
-              port: worker-hc
-            initialDelaySeconds: 10
-            periodSeconds: 15
-            timeoutSeconds: 3
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                  - "/bin/bash"
-                  - "/pre-stop-hook.sh"
-          env:
-            - name: CONCOURSE_SWEEP_INTERVAL
-              value: 30s
-            - name: CONCOURSE_CONNECTION_DRAIN_TIMEOUT
-              value: 1h
-            - name: CONCOURSE_HEALTHCHECK_BIND_IP
-              value: 0.0.0.0
-            - name: CONCOURSE_HEALTHCHECK_BIND_PORT
-              value: "8888"
-            - name: CONCOURSE_HEALTHCHECK_TIMEOUT
-              value: 5s
-            - name: CONCOURSE_DEBUG_BIND_IP
-              value: 127.0.0.1
-            - name: CONCOURSE_DEBUG_BIND_PORT
-              value: "7776"
-            - name: CONCOURSE_WORK_DIR
-              value: /concourse-work-dir
-            - name: CONCOURSE_BIND_IP
-              value: 127.0.0.1
-            - name: CONCOURSE_BIND_PORT
-              value: "7777"
-            - name: CONCOURSE_LOG_LEVEL
-              value: info
-            - name: CONCOURSE_TSA_HOST
-              value: concourse-web:2222
-            - name: CONCOURSE_TSA_PUBLIC_KEY
-              value: /concourse-keys/host_key.pub
-            - name: CONCOURSE_TSA_WORKER_PRIVATE_KEY
-              value: /concourse-keys/worker_key
-            - name: CONCOURSE_GARDEN_BIN
-              value: gdn
-            - name: CONCOURSE_BAGGAGECLAIM_LOG_LEVEL
-              value: info
-            - name: CONCOURSE_BAGGAGECLAIM_BIND_IP
-              value: 127.0.0.1
-            - name: CONCOURSE_BAGGAGECLAIM_BIND_PORT
-              value: "7788"
-            - name: CONCOURSE_BAGGAGECLAIM_DEBUG_BIND_IP
-              value: 127.0.0.1
-            - name: CONCOURSE_BAGGAGECLAIM_DEBUG_BIND_PORT
-              value: "7787"
-            - name: CONCOURSE_BAGGAGECLAIM_DRIVER
-              value: naive
-            - name: CONCOURSE_BAGGAGECLAIM_BTRFS_BIN
-              value: btrfs
-            - name: CONCOURSE_BAGGAGECLAIM_MKFS_BIN
-              value: mkfs.btrfs
-            - name: CONCOURSE_VOLUME_SWEEPER_MAX_IN_FLIGHT
-              value: "5"
-            - name: CONCOURSE_CONTAINER_SWEEPER_MAX_IN_FLIGHT
-              value: "5"
-          ports:
-            - name: worker-hc
-              containerPort: 8888
-          resources:
-            requests:
-              cpu: 500m
-              memory: 512Mi
-          securityContext:
-            privileged: true
-          volumeMounts:
-            - name: concourse-keys
-              mountPath: /concourse-keys
-              readOnly: true
-            - name: concourse-work-dir
-              mountPath: /concourse-work-dir
-            - name: pre-stop-hook
-              mountPath: /pre-stop-hook.sh
-              subPath: pre-stop-hook.sh
+      - name: concourse-worker
+        image: concourse/concourse:5.5.0
+        imagePullPolicy: IfNotPresent
+        args:
+        - worker
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /
+            port: worker-hc
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          timeoutSeconds: 3
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - "/bin/bash"
+              - "/pre-stop-hook.sh"
+        env:
+        - name: CONCOURSE_SWEEP_INTERVAL
+          value: 30s
+        - name: CONCOURSE_CONNECTION_DRAIN_TIMEOUT
+          value: 1h
+        - name: CONCOURSE_HEALTHCHECK_BIND_IP
+          value: 0.0.0.0
+        - name: CONCOURSE_HEALTHCHECK_BIND_PORT
+          value: "8888"
+        - name: CONCOURSE_HEALTHCHECK_TIMEOUT
+          value: 5s
+        - name: CONCOURSE_DEBUG_BIND_IP
+          value: 127.0.0.1
+        - name: CONCOURSE_DEBUG_BIND_PORT
+          value: "7776"
+        - name: CONCOURSE_WORK_DIR
+          value: /concourse-work-dir
+        - name: CONCOURSE_BIND_IP
+          value: 127.0.0.1
+        - name: CONCOURSE_BIND_PORT
+          value: "7777"
+        - name: CONCOURSE_LOG_LEVEL
+          value: info
+        - name: CONCOURSE_TSA_HOST
+          value: concourse-web:2222
+        - name: CONCOURSE_TSA_PUBLIC_KEY
+          value: /concourse-keys/host_key.pub
+        - name: CONCOURSE_TSA_WORKER_PRIVATE_KEY
+          value: /concourse-keys/worker_key
+        - name: CONCOURSE_GARDEN_BIN
+          value: gdn
+        - name: CONCOURSE_BAGGAGECLAIM_LOG_LEVEL
+          value: info
+        - name: CONCOURSE_BAGGAGECLAIM_BIND_IP
+          value: 127.0.0.1
+        - name: CONCOURSE_BAGGAGECLAIM_BIND_PORT
+          value: "7788"
+        - name: CONCOURSE_BAGGAGECLAIM_DEBUG_BIND_IP
+          value: 127.0.0.1
+        - name: CONCOURSE_BAGGAGECLAIM_DEBUG_BIND_PORT
+          value: "7787"
+        - name: CONCOURSE_BAGGAGECLAIM_DRIVER
+          value: naive
+        - name: CONCOURSE_BAGGAGECLAIM_BTRFS_BIN
+          value: btrfs
+        - name: CONCOURSE_BAGGAGECLAIM_MKFS_BIN
+          value: mkfs.btrfs
+        - name: CONCOURSE_VOLUME_SWEEPER_MAX_IN_FLIGHT
+          value: "5"
+        - name: CONCOURSE_CONTAINER_SWEEPER_MAX_IN_FLIGHT
+          value: "5"
+        ports:
+        - name: worker-hc
+          containerPort: 8888
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: concourse-keys
+          mountPath: /concourse-keys
+          readOnly: true
+        - name: concourse-work-dir
+          mountPath: /concourse-work-dir
+        - name: pre-stop-hook
+          mountPath: /pre-stop-hook.sh
+          subPath: pre-stop-hook.sh
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  app.kubernetes.io/component: concourse-worker
-                  app.kubernetes.io/instance: concourse
-                  app.kubernetes.io/name: concourse
-              topologyKey: kubernetes.io/hostname
+          - labelSelector:
+              matchLabels:
+                app.kubernetes.io/component: concourse-worker
+                app.kubernetes.io/instance: concourse
+                app.kubernetes.io/name: concourse
+            topologyKey: kubernetes.io/hostname
       volumes:
-        - name: pre-stop-hook
-          configMap:
-            name: concourse-worker
-        - name: concourse-keys
-          secret:
-            secretName: concourse-worker
-            defaultMode: 0400
-            items:
-              - key: host-key-pub
-                path: host_key.pub
-              - key: worker-key
-                path: worker_key
-              - key: worker-key-pub
-                path: worker_key.pub
+      - name: pre-stop-hook
+        configMap:
+          name: concourse-worker
+      - name: concourse-keys
+        secret:
+          secretName: concourse-worker
+          defaultMode: 0400
+          items:
+          - key: host-key-pub
+            path: host_key.pub
+          - key: worker-key
+            path: worker_key
+          - key: worker-key-pub
+            path: worker_key.pub
   volumeClaimTemplates:
-    - metadata:
-        name: concourse-work-dir
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 20Gi
+  - metadata:
+      name: concourse-work-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel

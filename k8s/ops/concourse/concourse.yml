@@ -219,7 +219,7 @@ spec:
       serviceAccountName: concourse-web
       containers:
       - name: concourse-web
-        image: concourse/concourse:5.5.0
+        image: concourse/concourse:5.5.1
         imagePullPolicy: IfNotPresent
         args:
         - web
@@ -438,7 +438,7 @@ spec:
       terminationGracePeriodSeconds: 60
       initContainers:
       - name: concourse-worker-init-rm
-        image: concourse/concourse:5.5.0
+        image: concourse/concourse:5.5.1
         imagePullPolicy: IfNotPresent
         command:
         - /bin/sh
@@ -451,7 +451,7 @@ spec:
           mountPath: /concourse-work-dir
       containers:
       - name: concourse-worker
-        image: concourse/concourse:5.5.0
+        image: concourse/concourse:5.5.1
         imagePullPolicy: IfNotPresent
         args:
         - worker

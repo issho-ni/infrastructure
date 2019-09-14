@@ -134,7 +134,7 @@ spec:
 
       containers:
       - name: "consul"
-        image: "consul:1.6.0"
+        image: "consul:1.6.1"
         imagePullPolicy: "Always"
         ports:
         - name: http
